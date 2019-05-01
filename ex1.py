@@ -139,7 +139,8 @@ def adagrad(model, X_train, y_train, minibatch_size):
         grad = get_minibatch_grad(model, X_mini, y_mini)
 
         for k in grad:
-            pass  # todo
+            cache[k] = grad[k] * grad[k]
+            model[k] += learning_rate * grad[k] / (np.sqrt(cache[k]) + 1e-7)
 
     return model
 
@@ -157,7 +158,8 @@ def rmsprop(model, X_train, y_train, minibatch_size):
         grad = get_minibatch_grad(model, X_mini, y_mini)
 
         for k in grad:
-            pass  # todo
+            cache[k] = gamma * cache[k] + (1 - gamma) * grad[k] * grad[k]
+            model[k] += learning_rate * grad[k] / (np.sqrt(cache[k]) + 1e-7)
 
     return model
 
@@ -184,7 +186,7 @@ def adam(model, X_train, y_train, minibatch_size):
             m_k_hat = M[k] / (1. - beta1 ** (t))
             r_k_hat = R[k] / (1. - beta2 ** (t))
 
-            pass  # todo
+            model[k] += learning_rate * m_k_hat / (np.sqrt(r_k_hat) + 1e-7)
 
     return model
 
@@ -209,10 +211,10 @@ if __name__ == '__main__':
     algos = dict(
         sgd=sgd,
         momentum=momentum,
-        nesterov=nesterov#,
-        # adagrad=adagrad,
-        # rmsprop=rmsprop,
-        # adam=adam
+        nesterov=nesterov,
+        adagrad=adagrad,
+        rmsprop=rmsprop,
+        adam=adam
     )
 
     algo_accs = {k: np.zeros(n_experiment) for k in algos}
